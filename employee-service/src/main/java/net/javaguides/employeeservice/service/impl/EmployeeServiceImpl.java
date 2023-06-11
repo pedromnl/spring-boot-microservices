@@ -8,10 +8,9 @@ import net.javaguides.employeeservice.entity.Employee;
 import net.javaguides.employeeservice.exception.ResourceNotFoundException;
 import net.javaguides.employeeservice.mapper.EmployeeMapper;
 import net.javaguides.employeeservice.repository.EmployeeRepository;
+import net.javaguides.employeeservice.service.APIClient;
 import net.javaguides.employeeservice.service.EmployeeService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @AllArgsConstructor
@@ -21,7 +20,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     // ModelMapper
     //private ModelMapper modelMapper;
 
-    private RestTemplate restTemplate;
+    // private RestTemplate restTemplate;
+    //private WebClient webClient;
+
+    private APIClient apiClient;
 
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
@@ -49,9 +51,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         // Map to dto using ModelMapper
         // return modelMapper.map(employee, EmployeeDto.class);
 
-        // Get Department
-        ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/" + employee.getDepartmentCode(), DepartmentDto.class);
-        DepartmentDto departmentDto = responseEntity.getBody();
+        // REST Template
+        //ResponseEntity<DepartmentDto> responseEntity = webClient.getForEntity("http://localhost:8080/api/departments/" + employee.getDepartmentCode(), DepartmentDto.class);
+        //DepartmentDto departmentDto = responseEntity.getBody();
+
+        // Web Client
+        /*DepartmentDto departmentDto = webClient.get()
+                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();*/
+
+        // Spring Cloud Open Feign
+        DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
 
         // Map to dto using MapStruct
         EmployeeDto employeeDto = EmployeeMapper.MAPPER.mapToEmployeeDto(employee);
