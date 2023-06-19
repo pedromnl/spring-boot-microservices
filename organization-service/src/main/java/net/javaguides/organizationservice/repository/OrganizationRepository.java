@@ -1,2 +1,10 @@
-package net.javaguides.organizationservice.repository;public interface OrganizationRepository {
+package net.javaguides.organizationservice.repository;
+
+import net.javaguides.organizationservice.entity.Organization;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+    Optional<Organization> getOrganizationByOrganizationCode(String organizationCode);
 }
